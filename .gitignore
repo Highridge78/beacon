@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+
+# Lockfiles (using npm/package-lock.json)
+bun.lock
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Test output
+*.html
+
+# Internal docs (not for public repo)
+PROJECT_PROMPT.md
+PHASE3_TODO.md

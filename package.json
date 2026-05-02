@@ -1,0 +1,56 @@
+{
+  "name": "@highridge/beacon",
+  "version": "0.1.0",
+  "description": "Beacon — a local site audit tool for the conversion, SEO, and trust signals Lighthouse misses. 19 checks across 5 categories.",
+  "main": "dist/index.js",
+  "bin": {
+    "beacon": "dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "beacon",
+    "lighthouse",
+    "seo",
+    "audit",
+    "local-business",
+    "conversion",
+    "lead-generation",
+    "cli",
+    "typescript"
+  ],
+  "author": "Jeremy Black <jeremy@highridgewebdesign.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Highridge78/beacon"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "cheerio": "^1.0.0",
+    "commander": "^13.1.0",
+    "ora": "^8.2.0",
+    "undici": "^7.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.1.0"
+  }
+}
