@@ -5,6 +5,7 @@
 import { fetchPage } from "./fetcher.js";
 import { allChecks } from "./checks/index.js";
 import { calculateScore } from "./scorer.js";
+import { generateTopFixes, estimateConversionImpact, generateNarrative } from "./narrative.js";
 import type { AuditReport, CheckResult } from "./types.js";
 
 export async function audit(url: string): Promise<AuditReport> {
@@ -34,7 +35,14 @@ export async function audit(url: string): Promise<AuditReport> {
   // Calculate scores
   const { score, grade, categories } = calculateScore(results);
 
-  return {
+  // Generate priority fixes
+  const topFixes = generateTopFixes(results);
+
+  // Estimate conversion impact
+  const conversionImpact = estimateConversionImpact(results);
+
+  // Build report (narrative needs the full report context)
+  const report: AuditReport = {
     url: ctx.url,
     finalUrl: ctx.finalUrl,
     timestamp: new Date().toISOString(),
@@ -46,5 +54,13 @@ export async function audit(url: string): Promise<AuditReport> {
       ttfb: ctx.ttfb,
       loadTime: ctx.loadTime,
     },
+    topFixes,
+    conversionImpact,
+    narrative: "", // placeholder — generated below
   };
+
+  // Generate narrative (needs the full report)
+  report.narrative = generateNarrative(report);
+
+  return report;
 }

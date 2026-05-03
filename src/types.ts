@@ -21,6 +21,10 @@ export interface CheckResult {
   details?: string;
   /** Score contribution weight (1-10, higher = more important) */
   weight: number;
+  /** Actionable recommendation for fixing the issue */
+  recommendation?: string;
+  /** Estimated revenue/lead impact of this issue */
+  impact?: string;
 }
 
 export interface AuditContext {
@@ -55,6 +59,32 @@ export interface Check {
   run(ctx: AuditContext): Promise<CheckResult> | CheckResult;
 }
 
+export interface PriorityFix {
+  /** Rank 1-5 */
+  rank: number;
+  /** Check that flagged the issue */
+  checkId: string;
+  /** Human-readable check name */
+  checkName: string;
+  /** Category */
+  category: CheckCategory;
+  /** What to fix */
+  action: string;
+  /** Why it matters (revenue/lead impact) */
+  impact: string;
+  /** How long it typically takes */
+  effort: string;
+}
+
+export interface ConversionImpact {
+  /** Estimated % of leads being lost */
+  estimatedLeadLoss: string;
+  /** Estimated conversion improvement if all issues fixed */
+  potentialImprovement: string;
+  /** Plain-english verdict */
+  verdict: string;
+}
+
 export interface AuditReport {
   /** URL that was audited */
   url: string;
@@ -75,4 +105,10 @@ export interface AuditReport {
     ttfb: number;
     loadTime: number;
   };
+  /** Top 5 priority fixes ranked by impact */
+  topFixes: PriorityFix[];
+  /** Estimated conversion impact */
+  conversionImpact: ConversionImpact;
+  /** Client-facing audit narrative */
+  narrative: string;
 }

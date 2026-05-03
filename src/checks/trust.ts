@@ -12,26 +12,15 @@ export const reviewsCheck: Check = {
     const bodyText = $("body").text().toLowerCase();
     const bodyHtml = ctx.html.toLowerCase();
 
-    // Look for review/testimonial sections
     const reviewIndicators = [
-      "testimonial",
-      "review",
-      "what our customers say",
-      "what people say",
-      "what clients say",
-      "customer stories",
-      "client feedback",
-      "hear from our",
-      "★★★★",
-      "⭐⭐⭐",
-      "star rating",
-      "5-star",
-      "5 star",
+      "testimonial", "review", "what our customers say",
+      "what people say", "what clients say", "customer stories",
+      "client feedback", "hear from our", "★★★★", "⭐⭐⭐",
+      "star rating", "5-star", "5 star",
     ];
 
     const hasReviews = reviewIndicators.some((ind) => bodyText.includes(ind));
 
-    // Also check for Google Reviews widget, Yelp badge, etc.
     const hasReviewWidget =
       bodyHtml.includes("google.com/maps") ||
       bodyHtml.includes("elfsight") ||
@@ -40,7 +29,6 @@ export const reviewsCheck: Check = {
       bodyHtml.includes("trustpilot") ||
       bodyHtml.includes("yelp.com/biz");
 
-    // Check for review schema
     const hasReviewSchema =
       bodyHtml.includes('"review"') ||
       bodyHtml.includes('"aggregaterating"') ||
@@ -61,8 +49,9 @@ export const reviewsCheck: Check = {
       id: this.id, name: this.name, category: this.category, weight: this.weight,
       status: "fail",
       message: "No reviews or testimonials found on the page",
-      details:
-        "88% of consumers trust online reviews as much as personal recommendations. Show real customer testimonials with names and details.",
+      details: "88% of consumers trust online reviews as much as personal recommendations. Show real customer testimonials with names and details.",
+      recommendation: "Add 3-5 customer testimonials with: full name, service received, and star rating. Better yet, embed your Google Reviews directly. Place them mid-page where visitors are evaluating.",
+      impact: "Testimonials are the #1 trust builder for local businesses. Sites without reviews see 35-50% lower contact rates because visitors can't verify your quality.",
     };
   },
 };
@@ -79,38 +68,30 @@ export const trustSignalsCheck: Check = {
 
     const signals: string[] = [];
 
-    // Years in business
     if (/\d+\+?\s*years?\s*(of\s+)?experience/i.test(bodyText) || /since\s+\d{4}/i.test(bodyText)) {
       signals.push("years of experience");
     }
 
-    // Licensed/insured
     if (bodyText.includes("licensed") || bodyText.includes("insured") || bodyText.includes("bonded")) {
       signals.push("licensed/insured");
     }
 
-    // Guarantee
     if (bodyText.includes("guarantee") || bodyText.includes("warranty") || bodyText.includes("satisfaction")) {
       signals.push("guarantee/warranty");
     }
 
-    // Free estimate/quote
     if (bodyText.includes("free estimate") || bodyText.includes("free quote") || bodyText.includes("free consultation")) {
       signals.push("free estimate/quote");
     }
 
-    // Family/local/community
     if (
-      bodyText.includes("family owned") ||
-      bodyText.includes("family-owned") ||
-      bodyText.includes("locally owned") ||
-      bodyText.includes("local business") ||
+      bodyText.includes("family owned") || bodyText.includes("family-owned") ||
+      bodyText.includes("locally owned") || bodyText.includes("local business") ||
       bodyText.includes("generation")
     ) {
       signals.push("family/locally owned");
     }
 
-    // Certifications
     if (bodyText.includes("certified") || bodyText.includes("accredited") || bodyText.includes("bbb")) {
       signals.push("certifications");
     }
@@ -128,8 +109,9 @@ export const trustSignalsCheck: Check = {
         id: this.id, name: this.name, category: this.category, weight: this.weight,
         status: "warn",
         message: `Some trust signals found (${signals.join(", ")}) but could be stronger`,
-        details:
-          "Add more trust builders: years in business, licensed & insured, satisfaction guarantee, free estimates, certifications. These reduce buyer hesitation.",
+        details: "Add more trust builders: years in business, licensed & insured, satisfaction guarantee, free estimates, certifications.",
+        recommendation: "Create a trust bar near the top of your page showing: \"X+ Years Experience | Licensed & Insured | Satisfaction Guaranteed | Free Estimates\". Use icons for visual impact.",
+        impact: "Each trust signal reduces buyer hesitation. Going from 1-2 signals to 4+ can increase conversion rates by 25-40%.",
       };
     }
 
@@ -137,8 +119,9 @@ export const trustSignalsCheck: Check = {
       id: this.id, name: this.name, category: this.category, weight: this.weight,
       status: "fail",
       message: "No trust signals found on the page",
-      details:
-        "Local customers need reassurance. Add: years in business, licensed & insured, satisfaction guarantee, free estimates, family-owned. These directly impact conversion rates.",
+      details: "Local customers need reassurance. Add: years in business, licensed & insured, satisfaction guarantee, free estimates, family-owned.",
+      recommendation: "Add a prominent trust bar: \"[X]+ Years | Licensed & Insured | Free Estimates | 100% Satisfaction Guarantee\". This is a 30-minute fix with major impact.",
+      impact: "Without trust signals, visitors are choosing between you and a competitor they can verify. You're losing every comparison because you're giving them nothing to compare.",
     };
   },
 };
@@ -153,17 +136,14 @@ export const addressCheck: Check = {
     const $ = cheerio.load(ctx.html);
     const bodyText = $("body").text();
 
-    // Look for address patterns
     const hasStateZip = /\b[A-Z]{2}\s+\d{5}(-\d{4})?\b/.test(bodyText);
     const hasStreetAddress = /\d+\s+\w+\s+(st|street|rd|road|ave|avenue|blvd|boulevard|dr|drive|ln|lane|way|ct|court)\b/i.test(bodyText);
 
-    // Look for Google Maps embed
     const hasMaps =
       ctx.html.includes("google.com/maps") ||
       ctx.html.includes("maps.googleapis.com") ||
       ctx.html.includes("maps.google.com");
 
-    // Look for service area mentions
     const hasServiceArea = /serv(ice|ing)\s+(area|the|all of|throughout|across)/i.test(bodyText);
 
     if ((hasStateZip && hasStreetAddress) || hasMaps) {
@@ -181,8 +161,9 @@ export const addressCheck: Check = {
         id: this.id, name: this.name, category: this.category, weight: this.weight,
         status: "warn",
         message: "Service area or partial address found",
-        details:
-          "Include your full address or at minimum a Google Maps embed showing your service area. This builds trust and helps with local SEO.",
+        details: "Include your full address or at minimum a Google Maps embed showing your service area.",
+        recommendation: "Add a Google Maps embed showing your location or service area. Include your full address in the footer. Make sure it matches your Google Business Profile exactly.",
+        impact: "Address visibility is a local SEO ranking factor. Google cross-references your on-page address with your GBP. Inconsistencies hurt rankings.",
       };
     }
 
@@ -190,8 +171,9 @@ export const addressCheck: Check = {
       id: this.id, name: this.name, category: this.category, weight: this.weight,
       status: "fail",
       message: "No physical address or service area found",
-      details:
-        "Local businesses must show where they operate. Add your address, a Google Maps embed, or at minimum a clear service area description.",
+      details: "Local businesses must show where they operate.",
+      recommendation: "Add your address to the footer and a Google Maps embed to your contact page. If you're a service-area business, list every city/town you serve.",
+      impact: "Visitors can't trust a business with no address. Google can't rank you locally without location signals. This hurts both trust and SEO simultaneously.",
     };
   },
 };
@@ -206,15 +188,8 @@ export const socialLinksCheck: Check = {
     const $ = cheerio.load(ctx.html);
 
     const socialDomains = [
-      "facebook.com",
-      "instagram.com",
-      "twitter.com",
-      "x.com",
-      "linkedin.com",
-      "youtube.com",
-      "tiktok.com",
-      "nextdoor.com",
-      "yelp.com",
+      "facebook.com", "instagram.com", "twitter.com", "x.com",
+      "linkedin.com", "youtube.com", "tiktok.com", "nextdoor.com", "yelp.com",
     ];
 
     const foundSocials: string[] = [];
@@ -241,7 +216,9 @@ export const socialLinksCheck: Check = {
         id: this.id, name: this.name, category: this.category, weight: this.weight,
         status: "warn",
         message: `Only one social link found (${foundSocials[0]})`,
-        details: "Add at least Facebook and Google Business Profile links. For contractors, Nextdoor and Yelp are also valuable.",
+        details: "Add at least Facebook and Google Business Profile links.",
+        recommendation: "Add links to Facebook and Google Business Profile at minimum. For contractors, also add Nextdoor and Yelp. Place social icons in the footer.",
+        impact: "Social profiles serve as independent verification that your business exists and is active. Missing social links raise questions about legitimacy.",
       };
     }
 
@@ -249,8 +226,9 @@ export const socialLinksCheck: Check = {
       id: this.id, name: this.name, category: this.category, weight: this.weight,
       status: "fail",
       message: "No social media links found",
-      details:
-        "Social profiles build credibility. At minimum, link to your Facebook page and Google Business Profile.",
+      details: "Social profiles build credibility. At minimum, link to your Facebook page and Google Business Profile.",
+      recommendation: "Create and link to your Facebook Business Page and Google Business Profile. These are free, take 15 minutes each, and immediately boost your online presence.",
+      impact: "Zero social presence signals a business that's either brand new, inactive, or not legitimate. Visitors will check — and if they find nothing, they leave.",
     };
   },
 };

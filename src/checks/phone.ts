@@ -5,8 +5,6 @@ import type { Check, AuditContext, CheckResult } from "../types.js";
 const PHONE_REGEX =
   /(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g;
 
-const TEL_LINK_REGEX = /href\s*=\s*["']tel:/i;
-
 export const phoneCheck: Check = {
   id: "phone-number",
   name: "Phone Number Visible",
@@ -16,11 +14,9 @@ export const phoneCheck: Check = {
   run(ctx: AuditContext): CheckResult {
     const $ = cheerio.load(ctx.html);
 
-    // Check for phone numbers in the page text
     const bodyText = $("body").text();
     const phones = bodyText.match(PHONE_REGEX) || [];
 
-    // Check if phone is in the header/nav area (above the fold proxy)
     const headerText = $("header, nav, .header, .navbar, #header, #nav, .top-bar, .topbar").text();
     const headerPhones = headerText.match(PHONE_REGEX) || [];
 
@@ -29,8 +25,9 @@ export const phoneCheck: Check = {
         ...base(this),
         status: "fail",
         message: "No phone number found on the page",
-        details:
-          "Local businesses need a visible phone number. 60% of mobile searchers call directly from search results.",
+        details: "Local businesses need a visible phone number. 60% of mobile searchers call directly from search results.",
+        recommendation: "Add your phone number to the header/navigation area with a click-to-call link. Make it large and prominent — don't hide it in the footer.",
+        impact: "60% of local searches result in a phone call. No visible phone number means you're losing the majority of your highest-intent leads.",
       };
     }
 
@@ -46,8 +43,9 @@ export const phoneCheck: Check = {
       ...base(this),
       status: "warn",
       message: `Phone number found (${phones[0]}) but not in the header/navigation area`,
-      details:
-        "Move your phone number to the header so it's visible without scrolling. Above-the-fold phone numbers increase calls by 30-40%.",
+      details: "Move your phone number to the header so it's visible without scrolling. Above-the-fold phone numbers increase calls by 30-40%.",
+      recommendation: "Move the phone number to your header/navigation bar. On mobile, use a sticky \"Call Now\" button that's always visible.",
+      impact: "Phone numbers buried in the footer get 30-40% fewer calls than those in the header. Every scroll between the visitor and your number costs you leads.",
     };
   },
 };
@@ -63,7 +61,6 @@ export const clickToCallCheck: Check = {
     const telLinks = $('a[href^="tel:"]');
 
     if (telLinks.length === 0) {
-      // Check if there's a phone but no tel: link
       const bodyText = $("body").text();
       const hasPhone = PHONE_REGEX.test(bodyText);
 
@@ -73,8 +70,11 @@ export const clickToCallCheck: Check = {
         message: hasPhone
           ? "Phone number exists but no click-to-call link (tel:)"
           : "No click-to-call link found",
-        details:
-          "Wrap phone numbers in <a href=\"tel:+1XXXXXXXXXX\"> tags. Over 70% of mobile searches for local businesses result in a call.",
+        details: "Wrap phone numbers in <a href=\"tel:+1XXXXXXXXXX\"> tags. Over 70% of mobile searches for local businesses result in a call.",
+        recommendation: hasPhone
+          ? "Wrap your existing phone number in a tel: link: <a href=\"tel:+1XXXXXXXXXX\">Your Number</a>. This takes 30 seconds and is the easiest conversion win."
+          : "Add a phone number to your site and make it clickable with a tel: link for mobile users.",
+        impact: "On mobile, a non-clickable phone number requires users to memorize it, switch apps, and dial manually. Most won't bother — you lose 70%+ of mobile callers.",
       };
     }
 

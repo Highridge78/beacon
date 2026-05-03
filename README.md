@@ -1,97 +1,130 @@
 # Beacon
 
-A local site audit tool for the conversion and trust signals Lighthouse misses.
+**Lighthouse gives your site 100/100. Your site still isn't getting leads. Beacon tells you why.**
 
-Lighthouse tells you about performance and accessibility. **Beacon tells you if the site will actually get leads.**
+Beacon audits local business websites for the conversion, SEO, and trust signals that Lighthouse completely ignores — phone number in the header, CTA above the fold, Google Reviews, trust stacking, LocalBusiness schema, and 22 more checks that directly impact whether a visitor becomes a customer.
 
-Built for web developers, agencies, and freelancers who build sites for local service businesses (contractors, plumbers, roofers, electricians, etc.).
+## The Problem
 
-## Lighthouse vs Beacon
+Lighthouse audits performance, accessibility, and technical SEO. It does not check whether a website will actually generate leads.
 
-> Comparison hero image coming in next release.
+A roofing contractor's site can score 100/100 on Lighthouse while missing:
+- A phone number in the header
+- A call-to-action above the fold
+- Any reviews or testimonials
+- LocalBusiness schema markup
+- A clear service area
 
-Lighthouse gives [highridgewebdesign.com](https://highridgewebdesign.com) a **100/100 SEO score**. Beacon gives it a **66/100 (B-)**. That gap is everything Lighthouse doesn't check: CTA above the fold, phone number in the header, LocalBusiness schema completeness, social proof, reviews, and more.
+That site is technically perfect and functionally useless. Beacon catches what Lighthouse doesn't.
+
+## Example: The Gap
+
+| | Lighthouse | Beacon |
+|---|---|---|
+| highridgewebdesign.com | **100/100 SEO** | **62/100 (B-)** |
+| What it checks | Performance, accessibility, basic SEO | Conversion, trust, local SEO, lead generation |
+| What it misses | Everything that generates leads | Nothing — that's the point |
 
 ## Quick Start
 
 ```bash
-npx beacon https://example-plumber.com
+npx @highridge/beacon https://example-plumber.com
+```
+
+### Output Formats
+
+```bash
+# Terminal output (default) — color-coded report with Top 5 Fixes
+npx @highridge/beacon https://example.com
+
+# JSON — machine-readable for pipelines and integrations
+npx @highridge/beacon https://example.com --json
+
+# HTML — client-ready shareable report
+npx @highridge/beacon https://example.com --html
+
+# Save to file
+npx @highridge/beacon https://example.com --html -o report.html
+npx @highridge/beacon https://example.com --json -o results.json
 ```
 
 ## What Beacon Audits
 
-Designed for server-rendered local business websites (WordPress, Wix, Squarespace, Webflow, Next.js SSR, hand-coded HTML). Pure client-side rendered SPAs require headless browser support, coming in v1.0.
+**27 checks across 5 categories:**
 
-**19 checks across 5 categories:**
+### 🎯 Conversion — Will this site get leads?
 
-### 🎯 Conversion (will this site get leads?)
-| Check | What it looks for |
-|-------|------------------|
-| Phone Number | Phone number visible, ideally above the fold |
-| Click-to-Call | `tel:` links for mobile users |
-| CTA Above Fold | Clear call-to-action in the hero/header area |
-| Contact Form | Working form with appropriate fields |
+| Check | Weight | What it looks for |
+|-------|--------|------------------|
+| CTA Above the Fold | 9 | Clear call-to-action in the hero/header |
+| Above-the-Fold Headline | 8 | Specific, benefit-driven H1 (not "Welcome") |
+| Phone Number Visible | 8 | Phone number in the header, not buried in footer |
+| Sticky Header CTA | 7 | Fixed header with persistent CTA or phone link |
+| Contact Form | 7 | Working form with appropriate fields |
+| Compelling Offers | 6 | Free estimate, guarantee, financing, discounts |
+| Navigation Clarity | 5 | Services listed in nav (not just "Home \| About \| Contact") |
 
-### 🔍 SEO (will people find this site?)
-| Check | What it looks for |
-|-------|------------------|
-| Meta Title | Length, keywords, location in title tag |
-| Meta Description | Length and presence |
-| H1 Tag | Single, descriptive H1 heading |
-| LocalBusiness Schema | JSON-LD structured data with complete fields |
-| Service Schema | Service markup for search visibility |
-| Image Alt Tags | Descriptive alt text on images |
-| Internal Links | Linking structure across pages |
+### 🔍 SEO — Will people find this site?
 
-### 🤝 Trust (will visitors feel confident?)
-| Check | What it looks for |
-|-------|------------------|
-| Reviews/Testimonials | Customer reviews or testimonial sections |
-| Trust Signals | Years in business, licensed, insured, guarantees |
-| Address/Service Area | Physical address or Google Maps embed |
-| Social Links | Facebook, Google Business, Yelp, etc. |
-| Privacy Policy | Required for ads and legal compliance |
+| Check | Weight | What it looks for |
+|-------|--------|------------------|
+| LocalBusiness Schema | 7 | JSON-LD structured data with complete fields |
+| Meta Title Quality | 6 | Length, keywords, location in title |
+| Service Area Clarity | 6 | City/region mentions for local search |
+| Meta Description | 5 | Length and presence |
+| H1 Heading | 5 | Single, descriptive H1 |
+| Service Schema | 4 | Service markup for search visibility |
+| Image Alt Tags | 4 | Descriptive alt text on images |
+| Internal Links | 4 | Linking structure across pages |
+
+### 🤝 Trust — Will visitors feel confident?
+
+| Check | Weight | What it looks for |
+|-------|--------|------------------|
+| Reviews/Testimonials | 7 | Customer reviews or testimonial sections |
+| Trust Signal Stacking | 7 | 5+ combined trust signals (years, license, reviews, guarantee, certs) |
+| Google Reviews | 6 | Google Reviews widget or GBP integration |
+| Trust Signals | 6 | Years in business, licensed, insured, guarantees |
+| Address/Service Area | 5 | Physical address or Google Maps embed |
+| Footer Completeness | 5 | NAP consistency, hours, social links in footer |
+| Social Links | 3 | Facebook, Google Business, Yelp, etc. |
+| Privacy Policy | 3 | Required for ads and legal compliance |
 
 ### ⚙️ Technical
-| Check | What it looks for |
-|-------|------------------|
-| SSL (HTTPS) | Secure connection |
-| Page Speed | Load time under 3 seconds |
+
+| Check | Weight | What it looks for |
+|-------|--------|------------------|
+| SSL (HTTPS) | 8 | Secure connection |
+| Page Speed | 6 | Load time under 3 seconds |
 
 ### 📱 Mobile
-| Check | What it looks for |
-|-------|------------------|
-| Click-to-Call | `tel:` links that work on mobile |
-| Viewport | Proper mobile viewport meta tag |
 
-## Output Formats
+| Check | Weight | What it looks for |
+|-------|--------|------------------|
+| Click-to-Call | 7 | `tel:` links that work on mobile |
+| Mobile Viewport | 6 | Proper viewport meta tag |
 
-### Terminal (default)
-```bash
-npx beacon https://example.com
-```
+## What You Get
 
-Color-coded score card with pass/fail for each check, category scores, and recommendations.
+Every Beacon report includes:
 
-### JSON
-```bash
-npx beacon https://example.com --json
-```
+### 📋 Narrative Summary
+A plain-English paragraph explaining what's wrong, why it matters, and what to fix first. Written for clients, not developers.
 
-Machine-readable output for integrations and pipelines.
+### 📊 Estimated Conversion Impact
+A heuristic estimate of how many leads the site is losing to fixable issues and the potential improvement from addressing them.
 
-### HTML Report
-```bash
-npx beacon https://example.com --html
-```
+### 🔧 Top 5 Priority Fixes
+The five highest-impact issues ranked by (check weight × estimated conversion impact), with:
+- What to fix
+- Why it matters (revenue impact)
+- Estimated effort to implement
 
-Generates a shareable HTML report — dark theme, professional layout, perfect for sending to clients or prospects.
+### 📈 Category Scores
+Visual breakdown of performance across Conversion, SEO, Trust, Technical, and Mobile.
 
-### Save to File
-```bash
-npx beacon https://example.com --json -o results.json
-npx beacon https://example.com --html -o report.html
-```
+### 🔎 Detailed Results
+Every check with pass/fail/warn status, findings, recommendations, and impact estimates.
 
 ## Scoring
 
@@ -107,23 +140,33 @@ Each check has a weight (1–10) based on its impact on lead generation. Convers
 | D | 30–49 | Poor — major issues across multiple categories |
 | F | 0–29 | Not ready for traffic |
 
-## Why This Exists
+## Who This Is For
 
-Generic audit tools check page speed and accessibility. They don't check the things that actually determine whether a local business website generates leads:
+- **Web agencies** auditing prospects' sites before a pitch
+- **Freelancers** showing clients exactly what needs fixing
+- **Local business owners** who want to know if their site is actually working
+- **SEO professionals** who need to check conversion signals alongside technical SEO
 
-- Is there a phone number above the fold?
-- Is click-to-call working on mobile?
-- Is there LocalBusiness schema markup?
-- Are there trust signals (reviews, years in business)?
-- Is there a clear call-to-action?
+## Why Beacon Exists
 
-Every agency checks these manually. Every. Single. Time.
+Every agency manually checks the same things on every prospect's site: Is there a phone number above the fold? Is click-to-call working? Are there reviews? Is there schema markup? Is there a CTA?
 
-Beacon automates that process.
+Beacon automates that entire process in under 5 seconds and produces a report you can hand directly to a client.
 
-## Maintained by one person
+## Limitations
 
-Beacon is maintained by Jeremy Black. Issue and PR response times are best-effort, typically within 7 days.
+- Designed for server-rendered sites (WordPress, Wix, Squarespace, Webflow, static HTML). Pure client-side SPAs need headless browser support (planned for v1.0).
+- Conversion impact estimates are heuristics, not guarantees. They're based on industry benchmarks and are directionally correct, not precisely predictive.
+- Some checks (sticky header, trust signals) rely on keyword/pattern matching. They're accurate for the vast majority of local business sites but can produce false positives/negatives on unconventional sites.
+
+## Roadmap
+
+- [ ] Headless browser support (Puppeteer/Playwright) for SPA auditing
+- [ ] Multi-page crawl (audit service pages, contact page, about page)
+- [ ] Competitor comparison mode
+- [ ] Custom check plugins
+- [ ] PDF report export
+- [ ] CI/CD integration (GitHub Actions)
 
 ## Contributing
 
