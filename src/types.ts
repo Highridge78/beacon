@@ -96,6 +96,10 @@ export interface AuditReport {
   score: number;
   /** Letter grade A-F */
   grade: string;
+  /** Detected business type */
+  businessType: string;
+  /** Business type detection confidence (0-1) */
+  businessTypeConfidence: number;
   /** Individual check results */
   checks: CheckResult[];
   /** Category scores */

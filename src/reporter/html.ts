@@ -387,6 +387,7 @@ export function toHtml(report: AuditReport): string {
         <span>Load time: ${(report.performance.loadTime / 1000).toFixed(2)}s</span>
         <span>·</span>
         <span>TTFB: ${(report.performance.ttfb / 1000).toFixed(2)}s</span>
+        ${report.businessType && report.businessType !== "general" ? `<span>·</span><span>Industry: ${escapeHtml(formatBusinessType(report.businessType))}</span>` : ""}
       </div>
     </div>
 
@@ -523,4 +524,22 @@ function extractDomain(url: string): string {
   } catch {
     return url;
   }
+}
+
+function formatBusinessType(type: string): string {
+  const labels: Record<string, string> = {
+    "real-estate": "Real Estate",
+    "restaurant": "Restaurant",
+    "medical": "Medical Practice",
+    "dental": "Dental Practice",
+    "legal": "Law Firm",
+    "auto": "Auto Service",
+    "beauty": "Salon / Spa",
+    "fitness": "Fitness / Gym",
+    "contractor": "Contractor / Home Services",
+    "professional": "Professional Services",
+    "retail": "Retail / E-commerce",
+    "general": "Local Business",
+  };
+  return labels[type] || type;
 }
