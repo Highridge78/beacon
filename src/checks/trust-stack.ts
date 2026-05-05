@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { Check, AuditContext, CheckResult } from "../types.js";
+import { extractRawStateBlob, extractEmbeddedHtmlWidgets } from "../embedded-content.js";
 
 /**
  * Meta-check that evaluates whether the site stacks multiple trust signals
@@ -39,9 +40,15 @@ export const trustStackCheck: Check = {
       signals.push("licensed/insured");
     }
 
-    // 3. Reviews / testimonials present
+    // 3. Reviews / testimonials present (check DOM and embedded data)
     if (bodyText.includes("testimonial") || bodyText.includes("review") || bodyText.includes("what our customers") || bodyText.includes("★") || bodyText.includes("⭐")) {
       signals.push("reviews/testimonials");
+    }
+    if (!signals.includes("reviews/testimonials")) {
+      const fullHtml = ctx.html.toLowerCase();
+      if (fullHtml.includes("testimonial") || fullHtml.includes("testimonialslideshowcount") || fullHtml.includes("homepagetestimonialcount")) {
+        signals.push("reviews/testimonials");
+      }
     }
 
     // 4. Guarantees
@@ -49,9 +56,21 @@ export const trustStackCheck: Check = {
       signals.push("guarantee/warranty");
     }
 
-    // 5. Certifications / awards
+    // 5. Certifications / awards / industry credentials
     if (bodyText.includes("certified") || bodyText.includes("accredited") || bodyText.includes("award") || bodyText.includes("recognition")) {
       signals.push("certifications/awards");
+    }
+
+    // Real estate / industry credential badges (Realtor, MLS, NAR, Equal Housing)
+    if (!signals.includes("certifications/awards")) {
+      const fullHtml = ctx.html.toLowerCase();
+      if (
+        fullHtml.includes("realtor") || fullHtml.includes("equal-housing") ||
+        fullHtml.includes("equal housing") || fullHtml.includes("fair housing") ||
+        (fullHtml.includes("mls") && fullHtml.includes("board"))
+      ) {
+        signals.push("certifications/awards");
+      }
     }
 
     // 6. Before/after imagery
@@ -68,9 +87,22 @@ export const trustStackCheck: Check = {
       signals.push("team/owner visibility");
     }
 
-    // 8. Association badges (BBB, Chamber, trade associations)
-    if (bodyText.includes("bbb") || bodyText.includes("better business bureau") || bodyText.includes("chamber of commerce") || bodyText.includes("angi") || bodyText.includes("home advisor") || bodyText.includes("homeadvisor")) {
+    // 8. Association badges (BBB, Chamber, trade associations, real estate boards)
+    if (
+      bodyText.includes("bbb") || bodyText.includes("better business bureau") ||
+      bodyText.includes("chamber of commerce") || bodyText.includes("angi") ||
+      bodyText.includes("home advisor") || bodyText.includes("homeadvisor") ||
+      bodyText.includes("board of realtors") || bodyText.includes("association of realtors") ||
+      bodyText.includes("national association of realtors")
+    ) {
       signals.push("association memberships");
+    }
+    // Fallback: check full HTML source for association references in embedded data
+    if (!signals.includes("association memberships")) {
+      const fullHtml = ctx.html.toLowerCase();
+      if (fullHtml.includes("board of realtors") || fullHtml.includes("association of realtors")) {
+        signals.push("association memberships");
+      }
     }
 
     // 9. Number of projects / customers served

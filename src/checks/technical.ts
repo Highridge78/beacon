@@ -1,5 +1,6 @@
 import type { Check, AuditContext, CheckResult } from "../types.js";
 import * as cheerio from "cheerio";
+import { extractEmbeddedHtmlWidgets, isJsRenderedPage } from "../embedded-content.js";
 
 export const sslCheck: Check = {
   id: "ssl-https",
@@ -172,6 +173,7 @@ export const privacyPolicyCheck: Check = {
   run(ctx: AuditContext): CheckResult {
     const $ = cheerio.load(ctx.html);
 
+    // Stage 1: Check DOM <a> tags
     const privacyLinks = $("a").filter((_, el) => {
       const text = $(el).text().toLowerCase();
       const href = ($(el).attr("href") || "").toLowerCase();
@@ -188,6 +190,46 @@ export const privacyPolicyCheck: Check = {
         status: "pass",
         message: "Privacy policy link found",
       };
+    }
+
+    // Stage 2: Scan full HTML source for privacy links in embedded widgets / script data
+    // JS-rendered sites store footer links (including privacy) inside JSON state blobs
+    const htmlLower = ctx.html.toLowerCase();
+    const hasPrivacyInSource =
+      htmlLower.includes("privacy policy") ||
+      htmlLower.includes("privacylink") ||
+      htmlLower.includes("/privacy") ||
+      htmlLower.includes("privacy/");
+
+    if (hasPrivacyInSource) {
+      // Double-check it's actually a link, not just a form field name
+      const hasPrivacyLink =
+        /href[=:]["\\]*[^"]*privacy/i.test(ctx.html) ||
+        /"privacyLink"\s*:\s*"[^"]+"/i.test(ctx.html) ||
+        /privacy.policy/i.test(ctx.html);
+
+      if (hasPrivacyLink) {
+        const isJs = isJsRenderedPage(ctx.html);
+        return {
+          id: this.id, name: this.name, category: this.category, weight: this.weight,
+          status: "pass",
+          message: isJs
+            ? "Privacy policy link found (detected in embedded page data — rendered by JavaScript)"
+            : "Privacy policy link found",
+        };
+      }
+    }
+
+    // Stage 3: Check embedded HTML widgets for privacy links
+    const widgets = extractEmbeddedHtmlWidgets(ctx.html);
+    for (const widget of widgets) {
+      if (/privacy/i.test(widget) && /href/i.test(widget)) {
+        return {
+          id: this.id, name: this.name, category: this.category, weight: this.weight,
+          status: "pass",
+          message: "Privacy policy link found (detected in embedded page data — rendered by JavaScript)",
+        };
+      }
     }
 
     return {

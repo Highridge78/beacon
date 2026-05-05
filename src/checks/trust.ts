@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { Check, AuditContext, CheckResult } from "../types.js";
+import { extractEmbeddedSocialLinks, extractEmbeddedHtmlWidgets, extractRawStateBlob, isJsRenderedPage } from "../embedded-content.js";
 
 export const reviewsCheck: Check = {
   id: "reviews-testimonials",
@@ -94,6 +95,31 @@ export const trustSignalsCheck: Check = {
 
     if (bodyText.includes("certified") || bodyText.includes("accredited") || bodyText.includes("bbb")) {
       signals.push("certifications");
+    }
+
+    // Real estate credentials (Realtor, MLS, NAR, Equal Housing)
+    if (
+      bodyText.includes("realtor") || bodyText.includes("mls") ||
+      bodyText.includes("national association of realtors") ||
+      bodyText.includes("equal housing") || bodyText.includes("fair housing") ||
+      bodyText.includes("broker") || bodyText.includes("nar")
+    ) {
+      if (!signals.includes("certifications")) {
+        signals.push("industry credentials");
+      }
+    }
+
+    // Also check embedded data (JS-rendered sites store badges/designations in state)
+    if (signals.length < 3) {
+      const rawState = extractRawStateBlob(ctx.html);
+      if (rawState) {
+        const stateLower = rawState.toLowerCase();
+        if (stateLower.includes("realtor") || stateLower.includes("equal-housing") || stateLower.includes("mls")) {
+          if (!signals.includes("certifications") && !signals.includes("industry credentials")) {
+            signals.push("industry credentials");
+          }
+        }
+      }
     }
 
     if (signals.length >= 3) {
@@ -194,20 +220,49 @@ export const socialLinksCheck: Check = {
 
     const foundSocials: string[] = [];
 
+    // Stage 1: Check DOM <a> tags
     $("a").each((_, el) => {
       const href = $(el).attr("href") || "";
       for (const domain of socialDomains) {
-        if (href.includes(domain) && !foundSocials.includes(domain)) {
-          foundSocials.push(domain.replace(".com", ""));
+        const name = domain.replace(".com", "");
+        if (href.includes(domain) && !foundSocials.includes(name)) {
+          foundSocials.push(name);
         }
       }
     });
+
+    // Stage 2: Scan full HTML source (catches links in embedded widgets / script data)
+    if (foundSocials.length < 2) {
+      const htmlLower = ctx.html.toLowerCase();
+      for (const domain of socialDomains) {
+        const name = domain.replace(".com", "");
+        if (!foundSocials.includes(name) && htmlLower.includes(domain)) {
+          foundSocials.push(name);
+        }
+      }
+    }
+
+    // Stage 3: Check embedded state data for structured social link configs
+    if (foundSocials.length < 2) {
+      const embeddedSocials = extractEmbeddedSocialLinks(ctx.html);
+      for (const s of embeddedSocials) {
+        const name = s.platform.toLowerCase();
+        if (!foundSocials.includes(name)) {
+          foundSocials.push(name);
+        }
+      }
+    }
+
+    const isJs = isJsRenderedPage(ctx.html);
+    const sourceNote = isJs && foundSocials.length > 0
+      ? " (detected in embedded page data — rendered by JavaScript)"
+      : "";
 
     if (foundSocials.length >= 2) {
       return {
         id: this.id, name: this.name, category: this.category, weight: this.weight,
         status: "pass",
-        message: `Social links found: ${foundSocials.join(", ")}`,
+        message: `Social links found: ${foundSocials.join(", ")}${sourceNote}`,
       };
     }
 
@@ -215,9 +270,9 @@ export const socialLinksCheck: Check = {
       return {
         id: this.id, name: this.name, category: this.category, weight: this.weight,
         status: "warn",
-        message: `Only one social link found (${foundSocials[0]})`,
+        message: `Only one social link found (${foundSocials[0]})${sourceNote}`,
         details: "Add at least Facebook and Google Business Profile links.",
-        recommendation: "Add links to Facebook and Google Business Profile at minimum. For contractors, also add Nextdoor and Yelp. Place social icons in the footer.",
+        recommendation: "Add links to Facebook and Google Business Profile at minimum. Place social icons in the footer.",
         impact: "Social profiles serve as independent verification that your business exists and is active. Missing social links raise questions about legitimacy.",
       };
     }

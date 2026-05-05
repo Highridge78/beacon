@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import type { Check, AuditContext, CheckResult } from "../types.js";
+import { extractEmbeddedNavigation, isJsRenderedPage } from "../embedded-content.js";
 
 /**
  * Checks whether the navigation clearly lists services.
@@ -20,11 +21,21 @@ const SERVICE_KEYWORDS = [
   "kitchen", "bathroom", "basement", "deck", "fence", "gutter",
   "siding", "window", "door", "concrete", "drywall",
   "water heater", "drain", "sewer", "septic",
+  // Real estate
+  "listings", "our listings", "featured listings", "properties",
+  "buy", "sell", "buying", "selling", "homes for sale",
+  "rentals", "vacation rentals", "rental", "long term rental",
+  "search homes", "home search", "property search", "find a home",
+  "communities", "neighborhoods", "areas",
   // Professional services
   "dental", "legal", "accounting", "consulting",
   "web design", "marketing", "photography",
   // Auto
   "oil change", "brake", "tire", "transmission", "auto repair",
+  // Restaurant / food
+  "menu", "order online", "reservations",
+  // Medical
+  "appointments", "patient portal",
   // Home services
   "installation", "repair", "replacement", "maintenance",
   "residential", "commercial",
@@ -66,7 +77,38 @@ export const navigationCheck: Check = {
       });
     }
 
+    // Stage 2: If no DOM nav found, try embedded state data (JS-rendered sites)
     if (navLinks.length === 0) {
+      const embeddedNav = extractEmbeddedNavigation(ctx.html);
+      if (embeddedNav.length > 0) {
+        for (const item of embeddedNav) {
+          const name = item.name.trim().toLowerCase();
+          if (name && name.length > 0 && name.length < 50) {
+            navLinks.push(name);
+          }
+          for (const sub of item.subLinks) {
+            const subName = sub.name.trim().toLowerCase();
+            if (subName && subName.length > 0 && subName.length < 50) {
+              navLinks.push(subName);
+            }
+          }
+        }
+      }
+    }
+
+    if (navLinks.length === 0) {
+      // Check if this is a JS-rendered page — note it clearly
+      if (isJsRenderedPage(ctx.html)) {
+        return {
+          id: this.id, name: this.name, category: this.category, weight: this.weight,
+          status: "warn",
+          message: "Navigation could not be detected — this site renders its menu with JavaScript",
+          details: "This site uses JavaScript (React/Vue/Angular) to render navigation after page load. Beacon's static HTML analysis cannot evaluate JS-rendered menus. The navigation likely exists on the live site but requires a JS-capable auditor (Playwright) to verify.",
+          recommendation: "Beacon v0.3.0 will add Playwright-based rendering for JS-heavy sites. For now, manually verify the navigation on the live site.",
+          impact: "Navigation is the #1 most-used element on any website. If visitors can't find your services in the nav, they leave.",
+        };
+      }
+
       return {
         id: this.id, name: this.name, category: this.category, weight: this.weight,
         status: "fail",
