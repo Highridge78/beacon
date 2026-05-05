@@ -292,7 +292,7 @@ export const footerCheck: Check = {
     const $ = cheerio.load(ctx.html);
 
     /* ── Stage 1: standard footer elements ── */
-    let footer: cheerio.Cheerio<cheerio.AnyNode> = $(PRIMARY_SELECTORS);
+    let footer = $(PRIMARY_SELECTORS) as cheerio.Cheerio<any>;
 
     /* ── Stage 2: div/section/aside with footer-like class/ID ── */
     if (footer.length === 0) {
