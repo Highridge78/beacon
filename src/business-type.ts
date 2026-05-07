@@ -65,10 +65,11 @@ const TYPE_SIGNALS: TypeSignal[] = [
 
   // Medical
   { type: "medical", weight: 5, pattern: /\bpatient\s+(portal|form|registration)\b/i },
-  { type: "medical", weight: 4, pattern: /\bappointment\b/i },
-  { type: "medical", weight: 3, pattern: /\bphysician|doctor|md\b/i },
-  { type: "medical", weight: 3, pattern: /\bhealth\s*(care)?\s*(provider|center|clinic)\b/i },
-  { type: "medical", weight: 3, pattern: /\bmedical\b/i },
+  { type: "medical", weight: 5, pattern: /\bschedule\s+(an\s+)?appointment\b.*\b(clinic|practice|doctor|physician|provider)\b/i },
+  { type: "medical", weight: 3, pattern: /\bphysician|doctor|\bmd\b/i },
+  { type: "medical", weight: 4, pattern: /\bhealth\s*(care)?\s*(provider|center|clinic)\b/i },
+  { type: "medical", weight: 4, pattern: /\bmedical\s+(practice|center|clinic|care|group)\b/i },
+  { type: "medical", weight: 3, pattern: /\bprimary\s+care\b|\bfamily\s+medicine\b/i },
 
   // Dental
   { type: "dental", weight: 5, pattern: /\bdentist(ry)?\b/i },
@@ -118,6 +119,12 @@ const TYPE_SIGNALS: TypeSignal[] = [
   { type: "contractor", weight: 2, pattern: /\blicensed\s*(and|&)\s*insured\b/i },
   { type: "contractor", weight: 3, pattern: /\bsame.day\s+service\b/i },
   { type: "contractor", weight: 3, pattern: /\bsiding\b|\bgutter\b|\bconcrete\b/i },
+
+  // Web design / digital agency
+  { type: "professional", weight: 5, pattern: /\bweb\s*(site)?\s*design\b/i },
+  { type: "professional", weight: 4, pattern: /\blead\s*(generation|-gen)\b/i },
+  { type: "professional", weight: 4, pattern: /\bdigital\s*(marketing|agency)\b/i },
+  { type: "professional", weight: 3, pattern: /\bseo\b.*\bwebsite\b/i },
 
   // Professional services
   { type: "professional", weight: 4, pattern: /\baccounting\b|\baccountant\b|\bcpa\b/i },
