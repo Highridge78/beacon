@@ -1,6 +1,6 @@
 {
   "name": "@highridge/beacon",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Beacon — audit local business websites for the conversion, SEO, and trust signals Lighthouse misses. 27 checks across 5 categories. Client-ready HTML reports that win deals.",
   "main": "dist/index.js",
   "bin": {
