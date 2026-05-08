@@ -1,0 +1,160 @@
+  Business type: Real Estate (100% confidence)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BEACON SITE AUDIT
+  https://cherokeerealty.com
+  → https://www.cherokeerealty.com/
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Score: 56/100  Grade: C
+  13 passed  8 failed  6 warnings  27 total checks
+  Load time: 4.54s | TTFB: 4.23s
+
+  📋 Summary
+  ────────────────────────────────────────────────────────────
+  cherokeerealty.com scored 56/100 (C) — below average for a
+  local business site. 8 checks failed outright and 6 need
+  improvement. There is significant room to improve. The
+  biggest gap is in conversion readiness (32%). This site is
+  losing the majority of its potential leads. Critical fixes
+  needed immediately. The #1 priority fix: cta above the fold
+  (estimated effort: 30 minutes).
+
+  📊 Estimated Conversion Impact
+  ────────────────────────────────────────────────────────────
+  Estimated lead loss:       ~73%
+  Potential improvement:     Up to 60% more leads
+
+  🔧 Top 5 Priority Fixes
+  ────────────────────────────────────────────────────────────
+  #1 🎯 CTA Above the Fold (30 minutes)
+     Add a CTA button to your hero section immediately. Use
+     action language: "Schedule a Showing", "Get Your Home
+     Value", or "Browse Available Properties".
+  #2 🎯 Phone Number Visible (15 minutes)
+     Move the phone number to your header/navigation bar so
+     it's visible for buyer and seller inquiries. On mobile,
+     use a sticky "Call Now" button that's always visible.
+  #3 🎯 Above-the-Fold Headline Clarity (30 minutes)
+     Strengthen your headline by adding specificity. Strong
+     example: "Your Trusted [City] Real Estate Agent —
+     Helping You Buy & Sell with Confidence."
+  #4 📱 Click-to-Call Link (5 minutes)
+     Wrap your existing phone number in a tel: link: <a
+     href="tel:+1XXXXXXXXXX">Your Number</a>. This takes 30
+     seconds and is the easiest conversion win.
+  #5 🎯 Contact Form Present (1-2 hours)
+     Add a contact form with 5 fields: Name, Phone, Email,
+     Are you buying or selling?, Message. Place it
+     prominently on the homepage.
+
+  Category Scores
+  ────────────────────────────────────────────────────────────
+  🎯 Conversion      ██████░░░░░░░░░░░░░░  32%  (1/7 passed)
+  🔍 SEO             ██████████████░░░░░░  70%  (4/8 passed)
+  🤝 Trust           ███████████████░░░░░  74%  (6/8 passed)
+  ⚙️  Technical      ███████████░░░░░░░░░  57%  (1/2 passed)
+  📱 Mobile          █████████░░░░░░░░░░░  46%  (1/2 passed)
+
+  🎯 Conversion
+  ────────────────────────────────────────────────────────────
+  ✘ CTA Above the Fold
+    No clear call-to-action found on the page
+    💡 Every real estate website needs a clear CTA button — "Schedule a Showing", "Get Your Home Value". Without one, visitors leave without converting.
+    🔧 Add a CTA button to your hero section immediately. Use action language: "Schedule a Showing", "Get Your Home Value", or "Browse Available Properties".
+  ⚠ Above-the-Fold Headline Clarity
+    Headline lacks specificity: "Loading Cherokee Realty"
+    💡 Your headline doesn't clearly communicate what service you provide, where, or why a customer should choose you.
+    🔧 Strengthen your headline by adding specificity. Strong example: "Your Trusted [City] Real Estate Agent — Helping You Buy & Sell with Confidence."
+  ⚠ Phone Number Visible
+    Phone number found (828-479-6441) but not in the header/navigation area
+    💡 Move your phone number to the header so it's visible without scrolling. Above-the-fold phone numbers increase calls by 30-40%.
+    🔧 Move the phone number to your header/navigation bar so it's visible for buyer and seller inquiries. On mobile, use a sticky "Call Now" button that's always visible.
+  ✘ Sticky Header with CTA
+    No sticky header with CTA — visitors lose the ability to act as they scroll
+    💡 The header should stay fixed at the top of the page and include a clear CTA or phone number. This is the highest-converting pattern for local business sites.
+    🔧 Make your header sticky (CSS `position: sticky`) and add a "Schedule a Showing" button or phone number to it.
+  ✘ Contact Form Present
+    No contact form found on the page
+    💡 Not every visitor will call. A simple contact form captures leads who prefer not to pick up the phone.
+    🔧 Add a contact form with 5 fields: Name, Phone, Email, Are you buying or selling?, Message. Place it prominently on the homepage.
+  ⚠ Compelling Offers Present
+    Some offers present (Free estimate/consultation, Financing available) but could be stronger
+    💡 Stack multiple offers to reduce hesitation. The winning formula for real estate: Free Home Valuation + Free Buyer Consultation + Complimentary Market Analysis.
+    🔧 Add at least 2 more value signals: "Free Buyer Consultation", "Complimentary Market Analysis", or "No-Obligation Listing Presentation".
+  ✔ Navigation Lists Services
+    Navigation clearly lists services — 6 service-related items found
+
+  🔍 SEO
+  ────────────────────────────────────────────────────────────
+  ⚠ LocalBusiness Schema Markup
+    LocalBusiness schema found but missing: openingHours
+    💡 Complete schema markup improves your chances of appearing in Google's local pack. Add: openingHours.
+    🔧 Add these fields to your LocalBusiness schema: openingHours. Ensure they exactly match your Google Business Profile.
+  ⚠ Meta Title Quality
+    Title found but has issues: too long (61 chars — Google truncates at ~60)
+    💡 Current title: "Cherokee Realty | Robbinsville, NC Real Estate | 828-735-3818". For local businesses, include your primary service + city in the title.
+    🔧 Optimize your meta title to include your location and primary real estate services. Keep it under 60 characters for full display in search results.
+  ✔ Service Area Clarity
+    Service area clearly communicated — Robbinsville, NC, Lake Santeetlah, NC, Fontana Dam, NC
+  ✔ Meta Description Quality
+    Good meta description (142 chars)
+  ✔ H1 Heading Present
+    H1 found: "Loading Cherokee Realty"
+  ⚠ Service Schema Markup
+    No Service schema markup found
+    💡 Adding Service structured data helps search engines understand what services you offer and can improve visibility in service-related searches.
+    🔧 Add Service schema for each service you offer. Include serviceType, areaServed, and provider fields.
+  ✔ Image Alt Tags
+    All 1 images have alt text
+  ✘ Internal Linking Structure
+    Only 0 internal links found — weak site structure
+    💡 A well-linked homepage should have 10+ internal links pointing to service pages, about, contact, and other key pages.
+    🔧 Create internal links to every important page: Listings, Buy, Sell, About, Contact, reviews, service areas. Use descriptive anchor text like "listings page" instead of "click here".
+
+  🤝 Trust
+  ────────────────────────────────────────────────────────────
+  ✔ Reviews / Testimonials
+    Reviews or testimonials section found
+  ✔ Trust Signal Stacking
+    Excellent trust stacking — 5 signals: reviews/testimonials, guarantee/warranty, certifications/awards, before/after portfolio, association memberships
+  ✘ Google Reviews Integration
+    No Google Reviews integration found
+    💡 Google Reviews are the most trusted review source for local businesses. Embedding them on your site eliminates the need for visitors to leave and check reviews themselves.
+    🔧 Create a Google Business Profile (if you don't have one), collect 10+ reviews from past clients, then embed them on your homepage with a widget.
+  ✔ Trust Signals (Experience, Guarantees)
+    Strong trust signals: guarantee/warranty, free estimate/quote, industry credentials
+  ✔ Physical Address / Service Area
+    Physical address found on the page
+  ✘ Footer Completeness (NAP + Info)
+    No footer element found — missing essential business information placement
+    💡 The footer is where visitors expect to find your phone number, address, and hours. It's also critical for local SEO (NAP consistency).
+    🔧 Build a complete footer: business name, phone (clickable), address/service area, hours, email, links to Listings, Buy, Sell, and social icons.
+  ✔ Social Media Links
+    Social links found: facebook, instagram, twitter, linkedin, youtube, tiktok (detected in embedded page data — rendered by JavaScript)
+  ✔ Privacy Policy Page
+    Privacy policy link found (detected in embedded page data — rendered by JavaScript)
+
+  ⚙️  Technical
+  ────────────────────────────────────────────────────────────
+  ✔ SSL Certificate (HTTPS)
+    Site is served over HTTPS (https://www.cherokeerealty.com/)
+  ✘ Page Load Speed
+    Slow load time: 4.54s — well over the 3s threshold
+    💡 Pages taking over 4 seconds to load lose 25% of visitors. This is likely caused by unoptimized images, too much JavaScript, or a slow server.
+    🔧 Immediate fixes: (1) Compress all images to WebP, (2) Lazy-load below-fold images, (3) Minimize render-blocking JS, (4) Enable server-side caching. Consider switching to a faster host.
+
+  📱 Mobile
+  ────────────────────────────────────────────────────────────
+  ✘ Click-to-Call Link
+    Phone number exists but no click-to-call link (tel:)
+    💡 Wrap phone numbers in <a href="tel:+1XXXXXXXXXX"> tags. Over 70% of mobile searches for local businesses result in a call.
+    🔧 Wrap your existing phone number in a tel: link: <a href="tel:+1XXXXXXXXXX">Your Number</a>. This takes 30 seconds and is the easiest conversion win.
+  ✔ Mobile Viewport
+    Viewport meta tag properly configured
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Generated by Beacon — https://github.com/Highridge78/beacon
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

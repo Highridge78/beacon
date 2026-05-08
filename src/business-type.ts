@@ -66,7 +66,7 @@ const TYPE_SIGNALS: TypeSignal[] = [
   // Medical
   { type: "medical", weight: 5, pattern: /\bpatient\s+(portal|form|registration)\b/i },
   { type: "medical", weight: 5, pattern: /\bschedule\s+(an\s+)?appointment\b.*\b(clinic|practice|doctor|physician|provider)\b/i },
-  { type: "medical", weight: 3, pattern: /\bphysician|doctor|\bmd\b/i },
+  { type: "medical", weight: 3, pattern: /\b(physician|doctor)\b/i },
   { type: "medical", weight: 4, pattern: /\bhealth\s*(care)?\s*(provider|center|clinic)\b/i },
   { type: "medical", weight: 4, pattern: /\bmedical\s+(practice|center|clinic|care|group)\b/i },
   { type: "medical", weight: 3, pattern: /\bprimary\s+care\b|\bfamily\s+medicine\b/i },
