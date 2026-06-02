@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Beacon — Local Site Audit</title>
+  <meta name="description" content="Audit local business websites for the conversion, SEO, and trust signals Lighthouse misses." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0A0E1A;
+      --surface: #111827;
+      --surface-2: #1A2234;
+      --border: #1E293B;
+      --text: #E2E8F0;
+      --text-dim: #94A3B8;
+      --text-muted: #64748B;
+      --accent: #38BDF8;
+      --accent-2: #F59E0B;
+      --pass: #22C55E;
+      --fail: #EF4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background:
+        radial-gradient(900px 500px at 50% -10%, #16233F 0%, transparent 60%),
+        var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100%;
+      padding: env(safe-area-inset-top) 1rem 2.5rem;
+    }
+
+    .wrap { max-width: 760px; margin: 0 auto; }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 2.75rem 0 1.75rem;
+    }
+    .mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .mark .dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent), 0 0 4px var(--accent);
+    }
+    .tagline {
+      margin-top: 0.75rem;
+      color: var(--text-dim);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      max-width: 30rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Audit form card */
+    .panel {
+      background: linear-gradient(180deg, var(--surface) 0%, #0E1524 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.4rem;
+      box-shadow: 0 20px 50px -25px rgba(0,0,0,0.8);
+    }
+    form { display: flex; flex-direction: column; gap: 0.85rem; }
+    .field-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .input-row { display: flex; gap: 0.6rem; }
+    input[type="url"], input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.95rem 1rem;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input::placeholder { color: var(--text-muted); }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.15);
+    }
+    button.run {
+      flex-shrink: 0;
+      background: var(--accent);
+      color: #03121D;
+      border: none;
+      border-radius: 12px;
+      padding: 0 1.4rem;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: transform 0.12s ease, background-color 0.2s ease, opacity 0.2s ease;
+      white-space: nowrap;
+    }
+    button.run:hover:not(:disabled) { background: #7DD3FC; transform: translateY(-1px); }
+    button.run:active:not(:disabled) { transform: translateY(0); }
+    button.run:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .hint { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Status / loading */
+    .status {
+      display: none;
+      align-items: center;
+      gap: 0.7rem;
+      margin-top: 1.1rem;
+      padding: 0.9rem 1rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-dim);
+      font-size: 0.92rem;
+    }
+    .status.show { display: flex; }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(56,189,248,0.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error {
+      display: none;
+      margin-top: 1.1rem;
+      padding: 0.9rem 1rem;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.4);
+      border-radius: 12px;
+      color: #FCA5A5;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .error.show { display: block; }
+
+    /* Result */
+    .result { display: none; margin-top: 1.75rem; }
+    .result.show { display: block; }
+    .result-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .result-meta { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+    .grade-chip {
+      font-weight: 800;
+      font-size: 1.05rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+    .result-url {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    button.secondary {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem 0.95rem;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    button.secondary:hover { border-color: var(--accent); color: var(--text); }
+
+    iframe.report {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--bg);
+      min-height: 600px;
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    footer a { color: var(--text-dim); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 560px) {
+      .input-row { flex-direction: column; }
+      button.run { padding: 0.95rem 1rem; }
+      header { padding: 1.75rem 0 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="mark" data-testid="app-title"><span class="dot"></span> Beacon</div>
+      <p class="tagline">
+        Audit a local business website for the conversion, SEO, and trust signals
+        Lighthouse misses — 27 checks across 5 categories.
+      </p>
+    </header>
+
+    <main class="panel">
+      <form id="audit-form" data-testid="audit-form" autocomplete="off">
+        <label class="field-label" for="url-input">Website URL</label>
+        <div class="input-row">
+          <input
+            id="url-input"
+            data-testid="url-input"
+            type="text"
+            inputmode="url"
+            placeholder="example-plumber.com"
+            aria-label="Website URL to audit"
+            required
+          />
+          <button class="run" type="submit" data-testid="run-audit-button">Run Audit</button>
+        </div>
+        <span class="hint">No <code>https://</code> needed — we'll add it for you.</span>
+      </form>
+
+      <div class="status" id="status" data-testid="audit-status">
+        <span class="spinner"></span>
+        <span id="status-text">Auditing the site… this usually takes a few seconds.</span>
+      </div>
+
+      <div class="error" id="error" data-testid="audit-error"></div>
+    </main>
+
+    <section class="result" id="result" data-testid="audit-result">
+      <div class="result-bar">
+        <div class="result-meta">
+          <span class="grade-chip" id="grade-chip" data-testid="grade-chip"></span>
+          <span class="result-url" id="result-url" data-testid="result-url"></span>
+        </div>
+        <button class="secondary" id="reset-button" data-testid="reset-button">Run another audit</button>
+      </div>
+      <iframe class="report" id="report-frame" data-testid="report-frame" title="Beacon audit report"></iframe>
+    </section>
+
+    <footer>
+      Powered by the <a href="https://github.com/Highridge78/beacon" target="_blank" rel="noopener">Beacon</a> engine.
+      No tracking. No AI. Pure analysis.
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById("audit-form");
+      const input = document.getElementById("url-input");
+      const runBtn = document.querySelector("button.run");
+      const statusEl = document.getElementById("status");
+      const statusText = document.getElementById("status-text");
+      const errorEl = document.getElementById("error");
+      const resultEl = document.getElementById("result");
+      const frame = document.getElementById("report-frame");
+      const gradeChip = document.getElementById("grade-chip");
+      const resultUrl = document.getElementById("result-url");
+      const resetBtn = document.getElementById("reset-button");
+
+      function gradeColor(grade) {
+        if (!grade) return "#94A3B8";
+        if (grade.startsWith("A")) return "#22C55E";
+        if (grade.startsWith("B")) return "#84CC16";
+        if (grade.startsWith("C")) return "#F59E0B";
+        if (grade.startsWith("D")) return "#F97316";
+        return "#EF4444";
+      }
+
+      function sizeFrame() {
+        try {
+          const doc = frame.contentDocument || frame.contentWindow.document;
+          if (doc && doc.body) {
+            frame.style.height = doc.body.scrollHeight + 40 + "px";
+          }
+        } catch (e) { /* ignore */ }
+      }
+      frame.addEventListener("load", sizeFrame);
+      window.addEventListener("resize", sizeFrame);
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const url = input.value.trim();
+        if (!url) return;
+
+        errorEl.classList.remove("show");
+        resultEl.classList.remove("show");
+        statusEl.classList.add("show");
+        statusText.textContent = "Fetching and analyzing " + url + " …";
+        runBtn.disabled = true;
+        runBtn.textContent = "Auditing…";
+
+        try {
+          const res = await fetch("/api/audit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: url }),
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Audit failed.");
+          }
+
+          // Render the engine's HTML report verbatim, isolated in an iframe.
+          frame.srcdoc = data.html;
+          gradeChip.textContent = data.score + "/100 · " + data.grade;
+          gradeChip.style.color = gradeColor(data.grade);
+          resultUrl.textContent = data.url || url;
+          resultEl.classList.add("show");
+          setTimeout(sizeFrame, 300);
+          resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (err) {
+          errorEl.textContent = "Could not audit that site: " + err.message;
+          errorEl.classList.add("show");
+        } finally {
+          statusEl.classList.remove("show");
+          runBtn.disabled = false;
+          runBtn.textContent = "Run Audit";
+        }
+      });
+
+      resetBtn.addEventListener("click", function () {
+        resultEl.classList.remove("show");
+        input.value = "";
+        input.focus();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    })();
+  </script>
+</body>
+</html>

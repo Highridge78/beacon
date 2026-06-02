@@ -23,6 +23,7 @@ bun.lock
 
 # Test output
 *.html
+!public/index.html
 
 # Internal docs (not for public repo)
 PROJECT_PROMPT.md
