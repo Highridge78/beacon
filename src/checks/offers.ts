@@ -8,12 +8,135 @@ import type { Check, AuditContext, CheckResult } from "../types.js";
  * An offer gives visitors a reason to act NOW instead of later.
  * "Free estimate" is the minimum. The best local business sites
  * stack offers: free estimate + satisfaction guarantee + financing.
+ *
+ * Broadened from exact multi-word phrases to regex vocabulary that
+ * catches real offer language ("free Beacon audit", "zero-risk guarantee",
+ * "no signup required", etc.) without rescuing genuinely bare pages.
  */
 
 interface OfferMatch {
   type: string;
   text: string;
 }
+
+/**
+ * Each entry: a type label, a human description, and one or more patterns.
+ * A page earns a match if ANY pattern in the group fires.
+ */
+const OFFER_GROUPS: Array<{
+  type: string;
+  text: string;
+  patterns: RegExp[];
+}> = [
+  {
+    type: "free-offer",
+    text: "Free service/offer",
+    patterns: [
+      /free\s+(estimate|quote|consultation|assessment|inspection|evaluation|audit|analysis|review|score|report|demo|trial)/i,
+      /\bfree instant\b/i,
+      /\bno[- ]?cost\b/i,
+      /\bcomplimentary\b/i,
+    ],
+  },
+  {
+    type: "no-obligation",
+    text: "No-obligation / no-commitment",
+    patterns: [
+      /\bno obligation\b/i,
+      /\bno commitment\b/i,
+      /\bno[- ]?sign[- ]?up\b/i,
+      /\bno pressure\b/i,
+    ],
+  },
+  {
+    type: "guarantee",
+    text: "Guarantee",
+    patterns: [
+      /satisfaction\s+guarantee/i,
+      /100%\s+guarantee/i,
+      /money[- ]?back\s+guarantee/i,
+      /\bguaranteed?\b/i,
+      /\brisk[- ]?free\b/i,
+      /\bzero[- ]?risk\b/i,
+    ],
+  },
+  {
+    type: "discount",
+    text: "Discount offer",
+    patterns: [
+      /\d+%\s*off/i,
+      /\$\d+\s*off/i,
+      /\bspecial offer\b/i,
+      /\bdiscount\b/i,
+    ],
+  },
+  {
+    type: "financing",
+    text: "Financing available",
+    patterns: [
+      /\bfinanc/i,
+      /\bpayment\s+plan/i,
+      /\bmonthly\s+payment/i,
+      /\beasy\s+pay/i,
+    ],
+  },
+  {
+    type: "urgency",
+    text: "Limited-time or seasonal offer",
+    patterns: [
+      /\blimited\s+time\b/i,
+      /\bexpires?\b/i,
+      /\bseasonal\s+(special|deal|offer)/i,
+      /\bsame[- ]?day\b/i,
+    ],
+  },
+  {
+    type: "price-match",
+    text: "Price match guarantee",
+    patterns: [
+      /\bprice\s+match\b/i,
+      /\bbeat\s+any\s+(price|quote)\b/i,
+      /\blowest\s+price\b/i,
+    ],
+  },
+  {
+    type: "community-discount",
+    text: "Community/group discount",
+    patterns: [
+      /\bsenior\s+discount\b/i,
+      /\bmilitary\s+discount\b/i,
+      /\bfirst\s+responder\b/i,
+    ],
+  },
+  {
+    type: "warranty",
+    text: "Warranty offered",
+    patterns: [
+      /\d+[- ]?year\s+warrant/i,
+      /\blifetime\s+warrant/i,
+      /\bwarranty\b/i,
+    ],
+  },
+  {
+    type: "fixed-pricing",
+    text: "Fixed/transparent pricing",
+    patterns: [
+      /\bfixed\s+pric/i,
+      /\btransparent\s+pric/i,
+      /\bno\s+(hidden|surprise)\s+(fees?|charges?|costs?|invoices?)\b/i,
+      /\bno\s+scope\s+creep\b/i,
+    ],
+  },
+  {
+    type: "ownership",
+    text: "Full ownership / no lock-in",
+    patterns: [
+      /\bno\s+lock[- ]?in\b/i,
+      /\bfull\s+ownership\b/i,
+      /\byou\s+own\s+everything\b/i,
+    ],
+  },
+];
 
 export const offersCheck: Check = {
   id: "offer-presence",
@@ -23,48 +146,14 @@ export const offersCheck: Check = {
 
   run(ctx: AuditContext): CheckResult {
     const $ = cheerio.load(ctx.html);
-    const bodyText = $("body").text().toLowerCase();
+    const bodyText = $("body").text().toLowerCase().replace(/\s+/g, " ");
 
     const offers: OfferMatch[] = [];
 
-    // Free estimate/consultation/quote
-    if (/free\s+(estimate|quote|consultation|assessment|inspection|evaluation)/i.test(bodyText)) {
-      offers.push({ type: "free-estimate", text: "Free estimate/consultation" });
-    }
-
-    // Discount / percentage off
-    if (/\d+%\s*off/i.test(bodyText) || /\$\d+\s*off/i.test(bodyText)) {
-      offers.push({ type: "discount", text: "Discount offer" });
-    }
-
-    // Satisfaction guarantee
-    if (/satisfaction\s+guarantee/i.test(bodyText) || /100%\s+guarantee/i.test(bodyText) || /money.back\s+guarantee/i.test(bodyText)) {
-      offers.push({ type: "guarantee", text: "Satisfaction guarantee" });
-    }
-
-    // Financing / payment plans
-    if (/financ/i.test(bodyText) || /payment\s+plan/i.test(bodyText) || /monthly\s+payment/i.test(bodyText) || /easy\s+pay/i.test(bodyText)) {
-      offers.push({ type: "financing", text: "Financing available" });
-    }
-
-    // Limited time / seasonal
-    if (/limited\s+time/i.test(bodyText) || /expires?\b/i.test(bodyText) || /special\s+offer/i.test(bodyText) || /seasonal\s+(special|deal|offer)/i.test(bodyText)) {
-      offers.push({ type: "urgency", text: "Limited-time or seasonal offer" });
-    }
-
-    // Price match
-    if (/price\s+match/i.test(bodyText) || /beat\s+any\s+(price|quote)/i.test(bodyText) || /lowest\s+price/i.test(bodyText)) {
-      offers.push({ type: "price-match", text: "Price match guarantee" });
-    }
-
-    // Senior/military/first responder discount
-    if (/senior\s+discount/i.test(bodyText) || /military\s+discount/i.test(bodyText) || /first\s+responder/i.test(bodyText)) {
-      offers.push({ type: "community-discount", text: "Community/group discount" });
-    }
-
-    // Warranty
-    if (/\d+.year\s+warrant/i.test(bodyText) || /lifetime\s+warrant/i.test(bodyText)) {
-      offers.push({ type: "warranty", text: "Warranty offered" });
+    for (const group of OFFER_GROUPS) {
+      if (group.patterns.some((re) => re.test(bodyText))) {
+        offers.push({ type: group.type, text: group.text });
+      }
     }
 
     if (offers.length >= 3) {
